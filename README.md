@@ -9,7 +9,7 @@ This repository contains the R code to fit the models described in the paper ent
 
 
 # R code
-R code to fit the multivariate spatio-temporal areal models described in the paper, and to reproduce the results, has been included [here](https://github.com/spatialstatisticsupna/P-splines/blob/master/R/).
+R code to fit the multivariate spatio-temporal areal models described in the paper, and to reproduce the results, has been included [here](https://github.com/spatialstatisticsupna/Multivariate_spatio_temporal_P_spline/blob/master/R/).
 
 # References
 Vicente, G., Goicoa, T., and Ugarte, M.D. (2020). A novel multivariate spatio-temporal approach based on splines to analyse different crimes against women.
