@@ -1,5 +1,5 @@
 # A novel multivariate spatio-temporal approach based on splines to analyse different crimes against women 
-This repository contains the R code to fit the models described in the paper entitled _"A novel multivariate spatio-temporal approach based on splines to analyse different crimes against women"_ %(Vicente et al., 2020).
+This repository contains the R code to fit the models described in the paper entitled _"A novel multivariate spatio-temporal approach based on splines to analyse different crimes against women" (Vicente et al., 2020).
 
 
 ## Table of contents
