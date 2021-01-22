@@ -86,32 +86,24 @@ save(resulta.T1, file= "./resul/resulta_univariate_T1.RData")
 ##################################################
 
 RW1.RW1.T2 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                    crimes=crimes, Expcrimes=paste0("e_",crimes),
-                     centered=TRUE, strategy=strategy,
-                     prior.spatial=1,
-                     prior.temporal=1,
-                     prior.interaction=2)
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=1, prior.temporal=1, prior.interaction=2,
+                    strategy=strategy)
 
 RW1.RW2.T2 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                    crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=1,
-                    prior.temporal=2,
-                    prior.interaction=2)
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=1, prior.temporal=2, prior.interaction=2,
+                    strategy=strategy)
 
 RW2.RW1.T2 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                    crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=2,
-                    prior.temporal=1,
-                    prior.interaction=2)
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=2, prior.temporal=1, prior.interaction=2, 
+                    strategy=strategy)
 
 RW2.RW2.T2 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                    crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=2,
-                    prior.temporal=2,
-                    prior.interaction=2)
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=2, prior.temporal=2, prior.interaction=2,
+                    strategy=strategy)
 
 ## save
 resulta.T2 <- list(RW1.RW1.T2=RW1.RW1.T2, RW1.RW2.T2=RW1.RW2.T2,
@@ -128,32 +120,24 @@ save(resulta.T2, file= "./resul/resulta_univariate_T2.RData")
 ##################################################
 
 RW1.RW1.T3 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                    crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=1,
-                    prior.temporal=1,
-                    prior.interaction=3)
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=1, prior.temporal=1, prior.interaction=3, 
+                    strategy=strategy)
 
 RW1.RW2.T3 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                    crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=1,
-                    prior.temporal=2,
-                    prior.interaction=3)
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=1, prior.temporal=2, prior.interaction=3, 
+                    strategy=strategy)
 
 RW2.RW1.T3 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                    crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=2,
-                    prior.temporal=1,
-                    prior.interaction=3)
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=2, prior.temporal=1, prior.interaction=3, 
+                    strategy=strategy)
 
 RW2.RW2.T3 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                    crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=2,
-                    prior.temporal=2,
-                    prior.interaction=3)
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=2, prior.temporal=2, prior.interaction=3, 
+                    strategy=strategy)
 
 ## save
 resulta.T3 <- list(RW1.RW1.T3=RW1.RW1.T3, RW1.RW2.T3=RW1.RW2.T3,
@@ -168,29 +152,25 @@ save(resulta.T3, file= "./resul/resulta_univariate_T3.RData")
 ##      Spatio-temporal random effect: Type IV  ##
 ##################################################
 
-RW1.RW1.T4 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year", crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=1,
-                    prior.temporal=1,
-                    prior.interaction=4)
+RW1.RW1.T4 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=1, prior.temporal=1, prior.interaction=4, 
+                    strategy=strategy)
 
-RW1.RW2.T4 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year", crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=1,
-                    prior.temporal=2,
-                    prior.interaction=4)
+RW1.RW2.T4 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=1, prior.temporal=2, prior.interaction=4, 
+                    strategy=strategy)
 
-RW2.RW1.T4 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year", crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=2,
-                    prior.temporal=1,
-                    prior.interaction=4)
+RW2.RW1.T4 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=2, prior.temporal=1, prior.interaction=4, 
+                    strategy=strategy)
 
-RW2.RW2.T4 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year", crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=2,
-                    prior.temporal=2,
-                    prior.interaction=4)
+RW2.RW2.T4 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=2, prior.temporal=2, prior.interaction=4, 
+                    strategy=strategy)
 
 ## save
 resulta.T4 <- list(RW1.RW1.T4=RW1.RW1.T4, RW1.RW2.T4=RW1.RW2.T4,

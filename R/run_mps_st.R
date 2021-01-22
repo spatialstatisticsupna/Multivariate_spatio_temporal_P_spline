@@ -47,12 +47,9 @@ source("functions/generic_mps.R")
 ##      Spatio-temporal random effect: Type II  ##
 ##################################################
 RW1.RW1.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                     crimes=crimes, Expcrimes=paste0("e_",crimes),
-                     centered=TRUE, strategy=strategy,
-                     prior.spatial=1,
-                     prior.temporal=1,
-                     prior.interaction=2,
-                     temp.corre=TRUE)
+                     crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                     prior.spatial=1, prior.temporal=1, prior.interaction=2,
+                     temp.corre=TRUE, strategy=strategy)
 
 ##################################################
 ## 1.2) Fitting model:                          ##
@@ -61,12 +58,9 @@ RW1.RW1.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year
 ##      Spatio-temporal random effect: Type II  ##
 ##################################################
 RW1.RW2.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                     crimes=crimes, Expcrimes=paste0("e_",crimes),
-                     centered=TRUE, strategy=strategy,
-                     prior.spatial=1,
-                     prior.temporal=2,
-                     prior.interaction=2,
-                     temp.corre=TRUE)
+                     crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE, 
+                     prior.spatial=1, prior.temporal=2, prior.interaction=2,
+                     temp.corre=TRUE, strategy=strategy)
 
 ##################################################
 ## 1.3) Fitting model:                          ##
@@ -75,12 +69,9 @@ RW1.RW2.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year
 ##      Spatio-temporal random effect: Type II  ##
 ##################################################
 RW2.RW1.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                     crimes=crimes, Expcrimes=paste0("e_",crimes),
-                     centered=TRUE, strategy=strategy,
-                     prior.spatial=2,
-                     prior.temporal=1,
-                     prior.interaction=2,
-                     temp.corre=TRUE)
+                     crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                     prior.spatial=2, prior.temporal=1, prior.interaction=2,
+                     temp.corre=TRUE, strategy=strategy)
 
 ##################################################
 ## 1.4) Fitting model:                          ##
@@ -89,12 +80,9 @@ RW2.RW1.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year
 ##      Spatio-temporal random effect: Type II  ##
 ##################################################
 RW2.RW2.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                     crimes=crimes, Expcrimes=paste0("e_",crimes),
-                     centered=TRUE, strategy=strategy,
-                     prior.spatial=2,
-                     prior.temporal=2,
-                     prior.interaction=2,
-                     temp.corre=TRUE)
+                     crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                     prior.spatial=2, prior.temporal=2, prior.interaction=2,
+                     temp.corre=TRUE, strategy=strategy)
 
 
 ##################################################
@@ -117,12 +105,9 @@ save(resulta.with, file= "./resul/resulta_with.RData")
 ##      Spatio-temporal random effect: Type II  ##
 ##################################################
 RW1.RW1.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                     crimes=crimes, Expcrimes=paste0("e_",crimes),
-                     centered=TRUE, strategy=strategy,
-                     prior.spatial=1,
-                     prior.temporal=1,
-                     prior.interaction=2,
-                     temp.corre=FALSE)
+                     crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                     prior.spatial=1, prior.temporal=1, prior.interaction=2,
+                     temp.corre=FALSE, strategy=strategy)
 
 ##################################################
 ## 2.2) Fitting model:                          ##
@@ -130,12 +115,10 @@ RW1.RW1.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year
 ##      Temporal prior: RW2                     ##
 ##      Spatio-temporal random effect: Type II  ##
 ##################################################
-RW1.RW2.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year", crimes=crimes, Expcrimes=paste0("e_",crimes),
-                     centered=TRUE, strategy=strategy,
-                     prior.spatial=1,
-                     prior.temporal=2,
-                     prior.interaction=2,
-                     temp.corre=FALSE)
+RW1.RW2.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
+                     crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                     prior.spatial=1, prior.temporal=2, prior.interaction=2,
+                     temp.corre=FALSE, strategy=strategy)
 
 ##################################################
 ## 2.3) Fitting model:                          ##
@@ -143,12 +126,10 @@ RW1.RW2.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year
 ##      Temporal prior: RW1                     ##
 ##      Spatio-temporal random effect: Type II  ##
 ##################################################
-RW2.RW1.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year", crimes=crimes, Expcrimes=paste0("e_",crimes),
-                     centered=TRUE, strategy=strategy,
-                     prior.spatial=2,
-                     prior.temporal=1,
-                     prior.interaction=2,
-                     temp.corre=FALSE)
+RW2.RW1.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year", 
+                     crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                     prior.spatial=2, prior.temporal=1, prior.interaction=2,
+                     temp.corre=FALSE, strategy=strategy)
 
 ##################################################
 ## 2.4) Fitting model:                          ##
@@ -156,13 +137,10 @@ RW2.RW1.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year
 ##      Temporal prior: RW2                     ##
 ##      Spatio-temporal random effect: Type II  ##
 ##################################################
-RW2.RW2.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year", crimes=crimes, Expcrimes=paste0("e_",crimes),
-                     centered=TRUE, strategy=strategy,
-                     prior.spatial=2,
-                     prior.temporal=2,
-                     prior.interaction=2,
-                     temp.corre=FALSE,
-                     initial=TRUE)
+RW2.RW2.T2 <- mps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
+                     crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                     prior.spatial=2, prior.temporal=2, prior.interaction=2,
+                     temp.corre=FALSE, strategy=strategy)
 
 ##################################################
 ## Save                                         ##

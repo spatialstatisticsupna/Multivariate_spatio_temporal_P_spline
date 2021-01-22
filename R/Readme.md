@@ -2,7 +2,7 @@
 
 This folder contains the necessary R functions to fit the multivariate spatio-temporal areal models described in Vicente et al. (2021), and to reproduce the results.
 
-The [data_Psplines.RData](https://github.com/spatialstatisticsupna/Multivariate_spatio_temporal_P_spline/blob/master/R/data_Psplines.RData) file contains the following R objects:
+The ```data_Psplines.RData``` file contains the following R objects:
 
 - ```data```: contains the data set used. It is a dataframe with the following variables,
 	- **dist**: Districts
