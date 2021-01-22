@@ -38,7 +38,7 @@ mps_st(carto=NULL, data=NULL, ID.area=NULL, ID.year=NULL, crimes=NULL, Expcrimes
 | ```k.long```	| Number of internal intervals (x1: longitude), if NULL k.long = min(length(unique(x1))/4, 40). |
 | ```k.lati```	| Number of internal intervals (x2: latitude), if NULL k.long = min(length(unique(x2))/4, 40). |
 | ```k.time```	| Number of internal intervals (x3: time), if NULL k.long = min(length(unique(x3))/4, 40). |
-| ```centered```  logical value (default TRUE); TRUE to center the smooth functions, FALSE to center the coefficients. |
+| ```centered``` | logical value (default TRUE); TRUE to center the smooth functions, FALSE to center the coefficients. |
 | ```strategy``` | one of either 'gaussian', 'simplified.laplace' (default), 'laplace' or 'adaptive', which specifies the approximation strategy considered |
 | ```initial```	| logical value (default TRUE); if TRUE, the initial values ​​of the hyperparameters are estimates using standardized incidence rates; if FALSE, the initial values are 1. |
 | ```rerun``` | logical value (default FALSE); if TRUE, this function will take the result in object, and rerun 'inla' again. |
