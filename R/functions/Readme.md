@@ -34,7 +34,6 @@ mps_st(carto=NULL, data=NULL, ID.area=NULL, ID.year=NULL, crimes=NULL, Expcrimes
 | ```prior.temporal``` | one of either 1 (default, for 'RW1') or 2 ('RW2'), which specifies the prior distribution considered on the coefficients of the temporal B-splines. |
 | ```prior.interaction``` | prior distributions for the espatio-temporal random effects,  one of either 1 (default, for 'Type I'), 2 ('Type II'), 3 ('Type III') or 4 ('Type IV'). |
 | ```temp.corre``` | logical value (default TRUE); if FALSE, a models without correlation between the coefficients of the temporal P-splines is fitted. |
- in the 'inla' function. |
 | ```order.B```	| order B-splines (default 3). |
 | ```k.long```	| Number of internal intervals (x1: longitude), if NULL k.long = min(length(unique(x1))/4, 40). |
 | ```k.lati```	| Number of internal intervals (x2: latitude), if NULL k.long = min(length(unique(x2))/4, 40). |
