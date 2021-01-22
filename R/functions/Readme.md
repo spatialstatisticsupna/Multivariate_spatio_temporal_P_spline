@@ -88,12 +88,10 @@ Implementation of spatial (```generic_mps_spat```) and temporal (```generic_mps_
 
 ## Usage
 ```
-generic_mps_spat(cmd = c("graph", "Q", "mu", "initial", "log.norm.const",
-                         "log.prior", "quit"), 
+generic_mps_spat(cmd = c("graph", "Q", "mu", "initial", "log.norm.const", "log.prior", "quit"), 
                  theta = NULL)
 
-generic_mps_temp(cmd = c("graph", "Q", "mu", "initial", "log.norm.const",
-                         "log.prior", "quit"),
+generic_mps_temp(cmd = c("graph", "Q", "mu", "initial", "log.norm.const", "log.prior", "quit"),
                  theta = NULL)                         
 ```
 ## Arguments
