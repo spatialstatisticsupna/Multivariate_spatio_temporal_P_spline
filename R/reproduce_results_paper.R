@@ -1,0 +1,641 @@
+################################################################################
+## Title: Multivariate Bayesian spatio-temporal P-spline models to analyse    ##
+##        crimes against women                                                ##
+##                                                                            ##
+## Authors: Vicente, G. - Goicoa, T.- Ugarte, M.D.                            ##
+##                                                                            ##
+## doi:                                                                       ##
+##                                                                            ##
+################################################################################
+## Reproduce the results given in the paper                                   ##
+################################################################################
+rm(list=ls())
+
+## libraries
+library(sp); library(tmap); library(INLA); library(grid); library(RColorBrewer)
+library(ggplot2); library(ggpubr)
+
+## Folder to save figures
+if(!file.exists("figures")) {dir.create("figures")}
+
+##################################################
+## Data loading and organization                ##
+##################################################
+## Load data and Maharashtra SpatialPolygonsDataFrame
+load("data_Psplines.RData")
+
+## Variables' names (crimes)
+crimes <- c("rape", "assault", "cruelty", "kidnapping")
+crime_names <-c("Rape", "Assault", "Cruelty","Kidnapping")
+
+## Number of areas and number of time periods
+n <- length(unique(data$ID_area))
+t <- length(unique(data$ID_year))
+
+## Number of crimes
+k <- length(crimes)
+
+## order data
+data <- data[order(data[,"ID_year"], data[,"ID_area"]),]
+
+## ID
+ID <- data.frame(dist=carto$dist,ID_area=carto$ID_area)
+
+## t.from and t.to 
+t.from <- min(data$year)
+t.to <- max(data$year)
+x <- t.from:t.to
+
+## colors 
+selected_colors <- c(rgb(154,192,205,alpha=150, maxColorValue=255),
+                     rgb(69,139,116, alpha=150, maxColorValue=255),
+                     rgb(255,160,122,alpha=150, maxColorValue=255),
+                     rgb(147,112,219,alpha=150, maxColorValue=255) )
+
+##################################################
+## Load results                                 ##
+##################################################
+## a) with temporal correlations
+load("./resul/resulta_with.RData")
+
+## b) without temporal correlations
+load("./resul/resulta_without.RData")
+
+################################################################################
+## Tables                                                                     ##
+################################################################################
+
+########################
+## Table 2. Model selection criteria, DIC, WAIC and LS, for multivariate models
+########################
+Table.2 <- c()
+for(l in 1:length(resulta.with)){
+  aux <- resulta.with[[l]]
+  aux1 <- resulta.without[[l]]
+  Table.2 <- rbind(Table.2,
+                   c(aux$dic$mean.deviance, aux$dic$p.eff, aux$dic$dic, aux$waic$waic, -mean(log(aux$cpo$cpo),na.rm=T)),
+                   c(aux1$dic$mean.deviance, aux1$dic$p.eff, aux1$dic$dic, aux1$waic$waic, -mean(log(aux1$cpo$cpo),na.rm=T))
+                   )
+  rm(list = c("aux","aux1"))
+}
+colnames(Table.2)<-c("Mean Post D","pD","DIC","WAIC","LS")
+Table.2 <- as.data.frame(Table.2)
+Table.2$Temp.corre <- c("TRUE","FALSE")
+Table.2$prior.spat <- rep(c("RW1","RW2"), each=4)
+Table.2$prior.temp <- rep(c("RW1","RW2"), each=2)
+Table.2$prior.inter <- c("Type II")
+
+Table.2 <- Table.2[,c("prior.inter", "Temp.corre", "prior.spat", "prior.temp", "Mean Post D", "pD", "DIC", "WAIC", "LS")]
+Table.2 <- Table.2[order(Table.2$Temp.corre, decreasing = TRUE), ]
+Table.2
+
+########################
+## Table 3. Estimated correlations (posterior medians and 95% credible intervals) 
+##          between the spatial P-spline coefficients (below main diagonal) and 
+##          between the temporal -spline coefficients (above main diagonal).
+########################
+model <- resulta.with$RW1.RW1.T2
+
+Table.3 <- c()
+for(m in c(k+1:(k*(k-1)/2))){
+  eval(parse(text= paste0("aux<- model$marginals.hyperpar$`Theta",m," for idx`") ))
+  marg <- inla.tmarginal(function(x) (2* exp(x))/(1+exp(x)) -1, aux)
+  
+  eval(parse(text= paste0("aux.t<- model$marginals.hyperpar$`Theta",m," for idy`") ))
+  marg.t <- inla.tmarginal(function(x) (2* exp(x))/(1+exp(x)) -1, aux.t)
+  
+  Table.3 <- rbind(Table.3,
+                   inla.qmarginal(c(0.5,0.025,0.975), marg),
+                   inla.qmarginal(c(0.5,0.025,0.975), marg.t)
+                   )
+  rm(list = c("aux","marg", "aux.t","marg.t"))
+}
+colnames(Table.3) <- c("median", "q.025", "q.975")
+Table.3 <- as.data.frame(Table.3)
+Table.3$rho <- rep(c("rho.1.2", "rho.1.3", "rho.1.4", "rho.2.3", "rho.2.4", "rho.3.4"), each=2)
+Table.3$corre <- rep(c("Spatial","Temporal"), 2) 
+Table.3 <- Table.3[order(Table.3$corre),]
+Table.3 <- Table.3[,c("corre", "rho", "median", "q.025", "q.975")]
+
+Table.3
+
+
+################################################################################
+## Figures                                                                    ##
+################################################################################
+model <- resulta.with$RW1.RW1.T2
+
+########################
+## Figure 4.  Posterior median of the district-specific spatial risk for 
+##            rapes (top left), assault (top right), cruelty (bottom left), 
+##            and kidnapping (bottom right)
+########################
+marg <- lapply(model$marginals.lincomb.derived[1:(n*k)], inla.tmarginal, 
+              fun=function(x){exp(x)})
+spatial <- c(unlist(lapply(marg, function(x){inla.qmarginal(0.5,x)} ))) 
+carto_use <- merge(carto, data.frame(ID_area=1:n, matrix(spatial,nrow=n, ncol=k)), by="ID_area")
+
+paleta<- RColorBrewer::brewer.pal(8,"YlOrRd")
+inf <- min(spatial)-0.01
+top <- max(spatial)+0.01
+values <- c(round(seq(inf, 1, length.out = 5),2), round(seq(1, top, length.out = 5),2)[-1])
+
+Map.spatial<- vector("list",k)
+for(j in 1:k){
+  Map.spatial[[j]]<- tm_shape(carto_use) +
+    tm_polygons(col=paste0("X",j), palette=paleta, title="",
+                legend.show=T, legend.reverse=T, style="fixed", breaks=values, 
+                interval.closure="left") +
+    tm_layout(main.title="", main.title.position="center", legend.text.size=1,
+              panel.labels=crime_names[j], panel.show=T, panel.label.size=1.2, 
+              panel.label.bg.color="lightskyblue3", bg.color="aliceblue", 
+              inner.margins=c(.04,.03, .02, .01), earth.boundary = TRUE,
+              space.color="grey90")
+}
+
+## pdf
+pdf("./figures/fig4.pdf", height=10, width=10, onefile=FALSE)
+pushViewport(viewport(layout=grid.layout(2,2)))
+print(Map.spatial[[1]], vp=viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(Map.spatial[[2]], vp=viewport(layout.pos.row = 1, layout.pos.col = 2))
+print(Map.spatial[[3]], vp=viewport(layout.pos.row = 2, layout.pos.col = 1))
+print(Map.spatial[[4]], vp=viewport(layout.pos.row = 2, layout.pos.col = 2))
+dev.off()
+
+## rm
+rm(list = c("marg","spatial","carto_use", "paleta","j", "inf","top","values","Map.spatial"))
+
+########################
+## Figure 5.  Temporal pattern of incidence risks for rape, assault, cruelty,
+##            and kidnapping
+########################
+marg<- lapply(model$marginals.lincomb.derived[n*k+1:(t*k)],inla.tmarginal, 
+              fun=function(x){exp(x)})
+temp<- matrix(unlist(lapply(marg, function(x){inla.qmarginal(0.5,x)})),
+              ncol=k, byrow = FALSE)
+q1<- matrix(unlist(lapply(marg, function(x){inla.qmarginal(0.025,x)})),
+            ncol=k, byrow = FALSE)
+q2<- matrix(unlist(lapply(marg, function(x){inla.qmarginal(0.975,x)})),
+            ncol=k, byrow = FALSE)
+
+df.final<- df.media<- c()
+for(i in 1:k){
+  aux<-data.frame(X.Vec=c(x, tail(x, 1), rev(x), x[1]),
+                  Y.Vec=c(q1[,i], tail(q2[,i], 1), rev(q2[,i]), q1[1,i]), 
+                  crime=crime_names[i])
+  df.final<- rbind(df.final,aux)
+  rm(aux)
+  aux<- data.frame(media=temp[,i], year=t.from:t.to, crime=crime_names[i])
+  df.media<- rbind(df.media,aux)
+  rm(aux)
+}
+rm(list = c("marg","temp","q1","q2","i"))
+
+## pdf
+for(i in 1:k){
+  p<- ggplot(data=df.final[df.final$crime==crime_names[i],]) +
+    geom_polygon(data=df.final[df.final$crime==crime_names[i],],
+                 aes(X.Vec, Y.Vec, fill=crime, group=crime), alpha = 0.7) +
+    geom_line(data=df.media[df.media$crime==crime_names[i],],
+              aes(year,media, group=crime), color='black',lwd=.6) +
+    facet_wrap(. ~ crime, ncol = 2, scales = "fixed") +
+    xlab("Year") +
+    ylab(expression(exp(f[j](x[t])))) +
+    ylim(c(0.6,2.25)) +
+    geom_hline(yintercept=1, linetype="dashed", color = "black") +
+    theme(legend.position = c("none"),
+          strip.text.x = element_text(size = 13)) +
+    scale_fill_manual(values = selected_colors[i])
+  eval(parse(text =  paste0("p.",i,"<-p") ))
+  rm(p)
+}
+
+## pdf
+pdf("./figures/fig5.pdf", height=8, width=10, onefile=FALSE)
+ggpubr::ggarrange(p.1,p.2,p.3,p.4, nrow = 2, ncol = 2)
+dev.off()
+
+## rm
+rm(list = c("i",paste0("p.",1:k)))
+
+########################
+## Figure 6.  Relative risk evolution (posterior median of $R_{ijt}$) for three 
+##            selected districts: Aurangabad, Garhchiroli, and Greater Bombay
+########################
+id.area <- carto@data[carto$dist %in% c("Aurangabad","Garhchiroli","Greater Bombay"), "ID_area"]
+
+obs <- reshape2::melt(data, id.vars = c("ID_area","ID_year"), measure.vars = crimes,
+                     variable.name = "crime", value.name = "obs")
+exp <- reshape2::melt(data, id.vars = c("ID_area","ID_year"), measure.vars = paste0("e_",crimes),
+                     variable.name = "crime", value.name = "exp")
+df.inla <-data.frame(O=obs[,"obs"], E=exp[,"exp"], crime=obs[,"crime"],
+                     ID_area= obs[,"ID_area"], ID_year= obs[,"ID_year"],
+                     ID_crime=rep(1:k,each=n*t))
+
+df.inla$risks.mean <- model$summary.fitted.values$`0.5quant`[1:(k*t*n)]
+df.inla$risks.q025 <- model$summary.fitted.values$`0.025quant`[1:(k*t*n)]
+df.inla$risks.q975 <- model$summary.fitted.values$`0.975quant`[1:(k*t*n)]
+
+df.final<- df.media<-c()
+for(i in id.area){
+  df<- c()
+  df.med<- c()
+  for(j in 1:k){
+    X.Vec <- c(x, tail(x, 1), rev(x), x[1])
+    Y.Vec <- c(df.inla[df.inla$ID_area==i & df.inla$ID_crime==j, c("risks.q025")],
+               tail(df.inla[df.inla$ID_area==i & df.inla$ID_crime==j, c("risks.q975")], 1), 
+               rev(df.inla[df.inla$ID_area==i & df.inla$ID_crime==j, c("risks.q975")]),
+               df.inla[df.inla$ID_area==i & df.inla$ID_crime==j, c("risks.q025")][1])
+    df.aux<- data.frame(X.Vec=X.Vec,
+                        Y.Vec=Y.Vec,
+                        ID=ID[ID$ID_area==i,"ID_area"],
+                        District= ID[ID$ID_area==i,"dist"],
+                        crime=crime_names[j]
+                        )
+    df<- rbind(df,df.aux)
+    df.med.aux<- data.frame(year=t.from:t.to,
+                            media=df.inla[df.inla$ID_area==i & df.inla$ID_crime==j, c("risks.mean")],
+                            ID=ID[ID$ID_area==i,"ID_area"],
+                            District= ID[ID$ID_area==i,"dist"],
+                            crime=crime_names[j]
+                            )
+    df.med<- rbind(df.med, df.med.aux)
+    rm(list = c("X.Vec","Y.Vec","df.aux","df.med.aux"))
+  }
+  df.final<- rbind(df.final, df)
+  df.media<- rbind(df.media, df.med)
+  rm(list=c("df","df.med"))
+}
+
+## pdf
+p <- ggplot(data=df.final) +
+  geom_polygon(data=df.final,
+               aes(X.Vec,Y.Vec, fill=crime, group=District),alpha = 0.7) +
+  geom_line(data=df.media,
+            aes(year,media, group=District), color='black',lwd=.6) +
+  facet_wrap(District ~  crime , ncol = 4, scales = "fixed",dir="h") +
+  xlab("Year") +
+  ylab(expression(R[itj])) +
+  geom_hline(yintercept=1, linetype="dashed", color = "black") +
+  theme(legend.position = c("top"),
+        legend.title = element_blank(),
+        legend.text = element_text(color = "black", size = 13),
+        strip.text.x = element_text(size = 13)
+        ) +
+  scale_fill_manual(values = c(selected_colors[2], selected_colors[3], selected_colors[4], selected_colors[1]) )
+
+## pdf
+pdf("./figures/fig6.pdf", height=8, width=14, onefile=FALSE)
+print(p)
+dev.off()
+
+## rm
+rm(list = c("id.area", "obs", "exp", "df.inla","df.final","df.media","i","j","p"))
+
+########################
+## Figure 7.  Functional boxplots of the final relative risk trends for rape 
+##            (top left), assault (top right), cruelty (bottom left), and 
+##            kidnapping (bottom right)
+########################
+library(fda)
+
+## 'fbplot_modified.R' is a modification of the 'fbplot' function of the 'fda' library.
+source('./fbplot/fbplot_modified.R')
+
+
+risk.array <- array(resulta.with$RW1.RW1.T2$summary.fitted.values$`0.5quant`[1:(k*t*n)], dim=c(n,t,k))
+inf <- min(risk.array)-0.01
+top <- round(max(risk.array)+0.51,2)
+
+## without arrows
+pdf("./figures/fig7.pdf", height=8, width=10, onefile=FALSE)
+par(mfrow=c(2,2))
+for(i in 1:k){
+  risk.mat<- risk.array[,,i]
+  t.risk.mat<- as.data.frame(t(risk.mat))
+  fbplot(t.risk.mat,method='MBD',ylim=c(inf,top), fullout=T,
+         barcol="slateblue4", outliercol="red", xlab="",ylab="", yaxt="n",
+         col=rgb(255,48,48,alpha=200, maxColorValue=255))
+  axis(side=2, at=seq(0,4,1), labels = TRUE, lty = 0)
+  title(ylab=expression(R[ijt]), xlab="Year", cex.lab=1.3, line=2.0)
+  rect(par("usr")[1],top-0.5,par("usr")[2],par("usr")[4],
+       col=" gray83", border = "gray83")
+  legend(7,top-0.5, crime_names[i], box.col = "transparent",
+         bg = "transparent", adj = 0.2, xjust = 0.5, yjust = 0.1, cex = 1.2)
+  rm(list = c("risk.mat","t.risk.mat"))
+}
+dev.off()
+rm(list = c("risk.array","inf","top","i"))
+
+
+################################################################################
+## Figures Supplementary materials                                            ##
+################################################################################
+
+########################
+## Figure E1. Exceedance probabilities for rapes (top left), assault (top right),
+##            cruelty (bottom left), and kidnapping (bottom right).
+########################
+marg<- lapply(model$marginals.lincomb.derived[1:(n*k)], inla.tmarginal,
+              fun=function(x){exp(x)})
+prob<- c(unlist(lapply(marg, function(x){1-inla.pmarginal(1,x)})))
+carto_use <- merge(carto, data.frame(ID_area=1:n, matrix(prob,nrow=n, ncol=k)), by="ID_area")
+
+paleta<- RColorBrewer::brewer.pal(5,"PuBu")
+values <- c(0,0.1,0.2,0.8,0.9,1)
+
+Prob.spatial<- vector("list",k)
+for(j in 1:k){
+  Prob.spatial[[j]]<- tm_shape(carto_use) +
+    tm_polygons(col=paste0("X",j), palette=paleta, title="",
+                legend.show=T, legend.reverse=T, style="fixed", breaks=values,
+                interval.closure="left") +
+    tm_layout(main.title="", main.title.position="center", legend.text.size=1,
+              panel.labels=crime_names[j], panel.show=T, panel.label.size=1.2, 
+              panel.label.bg.color="lightskyblue3", bg.color="aliceblue",
+              inner.margins=c(.04,.03, .02, .01), earth.boundary = TRUE,
+              space.color="grey90")
+}
+
+
+## pdf
+pdf("./figures/figE1.pdf", height=10, width=10, onefile=FALSE)
+pushViewport(viewport(layout=grid.layout(2,2)))
+print(Prob.spatial[[1]], vp=viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(Prob.spatial[[2]], vp=viewport(layout.pos.row = 1, layout.pos.col = 2))
+print(Prob.spatial[[3]], vp=viewport(layout.pos.row = 2, layout.pos.col = 1))
+print(Prob.spatial[[4]], vp=viewport(layout.pos.row = 2, layout.pos.col = 2))
+dev.off()
+
+## rm
+rm(list = c("marg","prob","carto_use","paleta","j","values","Prob.spatial"))
+
+########################
+## Figure E2. Specific temporal trends (posterior median of exp(delta_ijt) for
+##            three selected districts: Aurangabad, Garhchiroli, and Greater Bombay
+########################
+id.area <- carto@data[carto$dist %in% c("Aurangabad","Garhchiroli","Greater Bombay"), "ID_area"]
+
+obs <- reshape2::melt(data, id.vars = c("ID_area","ID_year"), measure.vars = crimes,
+                      variable.name = "crime", value.name = "obs")
+exp <- reshape2::melt(data, id.vars = c("ID_area","ID_year"), measure.vars = paste0("e_",crimes),
+                      variable.name = "crime", value.name = "exp")
+df.inla <-data.frame(O=obs[,"obs"], E=exp[,"exp"], crime=obs[,"crime"],
+                     ID_area= obs[,"ID_area"], ID_year= obs[,"ID_year"],
+                     ID_crime=rep(1:k,each=n*t))
+
+
+q.5<- q.025<- q.975<- c()
+for(i in 1:k){
+  eval(parse(text = paste0("aux<- lapply(model$marginals.random$idxy.",i,",
+                           inla.tmarginal, fun=function(x){exp(x)})") ))
+  q.5 <- c(q.5, unlist(lapply(aux, function(x){inla.qmarginal(0.5,x)} )))
+  q.025 <- c(q.025, unlist(lapply(aux, function(x){inla.qmarginal(0.025,x)})))
+  q.975 <- c(q.975, unlist(lapply(aux, function(x){inla.qmarginal(0.975,x)})))
+  rm(aux)
+}
+df.inla$risks.mean <- q.5
+df.inla$risks.q025 <- q.025
+df.inla$risks.q975 <- q.975
+rm(list = c("i","q.5","q.025","q.975"))
+
+
+
+df.final <- df.media <-c()
+for(i in id.area){
+  df <- df.med <- c()
+  for(j in 1:k){
+    X.Vec <- c(x, tail(x, 1), rev(x), x[1])
+    Y.Vec <- c(df.inla[df.inla$ID_area==i & 
+                         df.inla$ID_crime==j, c("risks.q025")],
+               tail(df.inla[df.inla$ID_area==i & 
+                              df.inla$ID_crime==j, c("risks.q975")], 1), 
+               rev(df.inla[df.inla$ID_area==i &
+                             df.inla$ID_crime==j, c("risks.q975")]),
+               df.inla[df.inla$ID_area==i &
+                         df.inla$ID_crime==j, c("risks.q025")][1])
+    df.aux<- data.frame(X.Vec=X.Vec, Y.Vec=Y.Vec, ID=ID[ID$ID_area==i,"ID_area"],
+                        District= ID[ID$ID_area==i,"dist"], crime=crime_names[j])
+    df<- rbind(df,df.aux)
+    df.med.aux<- data.frame(year=t.from:t.to,ID=ID[ID$ID_area==i,"ID_area"],
+                            media=df.inla[df.inla$ID_area==i &
+                                            df.inla$ID_crime==j, c("risks.mean")],
+                            District= ID[ID$ID_area==i,"dist"],crime=crime_names[j]
+    )
+    df.med<- rbind(df.med, df.med.aux)
+    rm(list = c("X.Vec","Y.Vec","df.aux","df.med.aux"))
+  }
+  df.final<- rbind(df.final, df)
+  df.media<- rbind(df.media, df.med)
+  rm(list=c("df","df.med"))
+}
+rm(list = c("i","j"))
+
+
+## pdf
+p<- ggplot(data=df.final) +
+  geom_polygon(data=df.final,
+               aes(X.Vec, Y.Vec, fill=crime, group=District), alpha = 0.7) + # , fill=selected_colors
+  geom_line(data=df.media,
+            aes(year,media, group=District), color='black',lwd=.6) +
+  facet_wrap(District ~  crime , ncol = 4, scales = "fixed",dir="h") +
+  xlab("Year") +
+  ylab(expression(exp(delta[ijt]))) +
+  geom_hline(yintercept=1, linetype="dashed", color = "black") +
+  theme(legend.position = c("top"),
+        legend.justification = c("center", "top"),
+        # legend.box.just = "center",
+        # legend.margin = margin(4, 4, 4, 4),
+        legend.title = element_blank(),
+        legend.text = element_text(color = "black", size = 12),
+        strip.text.x = element_text(size = 13)
+  ) +
+  scale_fill_manual(values = c(selected_colors[2], selected_colors[3], selected_colors[4], selected_colors[1]) )
+
+## pdf
+pdf("./figures/figE2.pdf", height=8, width=14, onefile=FALSE)
+print(p)
+dev.off()
+
+## rm
+rm(list = c("id.area","obs","exp","df.inla","df.final","df.media","p"))
+
+########################
+## Figure E3: E6. Map of estimated incidence risks for rape/assault/cruelty/kidnapping (top) 
+##                and posterior probabilities that the relative risk is greater than one 
+##                in Maharashtra between 2001 and 2013.
+########################
+risks <- model$summary.fitted.values$`0.5quant`[1:(k*t*n)]
+paleta <- RColorBrewer::brewer.pal(8,"YlOrRd")
+inf <- min(risks)-0.01
+top <- max(risks)+0.01
+values<- c(round(seq(inf, 1, length.out = 5),2), round(seq(1, top, length.out = 5),2)[-1] )
+
+prp <- 1-model$summary.linear.predictor[,"0 cdf"][1:(k*t*n)]
+paleta2 <- RColorBrewer::brewer.pal(5,"PuBu")
+values2 <- c(0,0.1,0.2,0.8,0.9,1)
+
+
+## Figure E3
+carto_use <- merge(carto, data.frame(ID_area=1:n, matrix(risks[1:(n*t)],nrow=n, ncol=t, byrow=F),
+                                     matrix(prp[1:(n*t)],nrow=n, ncol=t, byrow=F) ), by="ID_area")
+
+Map.Risks<- tm_shape(carto_use) + 
+  tm_polygons(col=paste0("X",1:t),
+              palette=paleta, title="", legend.show=T, legend.reverse=T, 
+              style="fixed", breaks=values, interval.closure="left") +
+  tm_layout(main.title=crime_names[1], main.title.position="center",
+            legend.text.size=1, panel.show=T, panel.label.size=2, 
+            panel.labels=as.character(round(seq(t.from,t.to,length.out=t))),
+            panel.label.bg.color="lightskyblue3", bg.color="aliceblue",
+            inner.margins=c(.04,.03,.02,.01), earth.boundary = TRUE, 
+            space.color="grey90", legend.outside=T, legend.outside.position="right",
+            legend.frame=F, legend.outside.size=0.25, outer.margins=c(0.02,0.01,0.02,0.01)) +
+  tm_facets(ncol=5, nrow=3)
+
+Map.Prob <- tm_shape(carto_use) + 
+  tm_polygons(col=paste0("X",1:t,".1"),
+              palette=paleta2, title="",legend.show=T, legend.reverse=T,
+              style="fixed", breaks=values2, interval.closure="left") +
+  tm_layout(main.title=crime_names[1] , main.title.position="center",
+            legend.text.size=1, panel.show=T, panel.label.size=2,
+            panel.labels=as.character(round(seq(t.from,t.to,length.out=t))),
+            panel.label.bg.color="lightskyblue3", bg.color="aliceblue",
+            inner.margins=c(.04,.03,.02,.01), earth.boundary = TRUE, space.color="grey90",
+            legend.outside=T, legend.outside.position="right", legend.frame=F,
+            legend.outside.size=0.25, outer.margins=c(0.02,0.01,0.02,0.01)) +
+  tm_facets(ncol=5, nrow=3)
+
+
+pdf("./figures/figE3.pdf", height=10, width=7.5, onefile=TRUE)
+pushViewport(viewport(layout=grid.layout(2,1)))
+print(Map.Risks, vp=viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(Map.Prob,  vp=viewport(layout.pos.row = 2, layout.pos.col = 1))
+dev.off()
+
+rm(list = c("carto_use","Map.Risks","Map.Prob"))
+
+
+## Figure E4
+carto_use <- merge(carto, data.frame(ID_area=1:n, matrix(risks[(n*t)+1:(n*t)],nrow=n, ncol=t, byrow=F),
+                                     matrix(prp[(n*t)+1:(n*t)],nrow=n, ncol=t, byrow=F) ), by="ID_area")
+
+Map.Risks<- tm_shape(carto_use) + 
+  tm_polygons(col=paste0("X",1:t),
+              palette=paleta, title="", legend.show=T, legend.reverse=T, 
+              style="fixed", breaks=values, interval.closure="left") +
+  tm_layout(main.title=crime_names[2], main.title.position="center",
+            legend.text.size=1, panel.show=T, panel.label.size=2, 
+            panel.labels=as.character(round(seq(t.from,t.to,length.out=t))),
+            panel.label.bg.color="lightskyblue3", bg.color="aliceblue",
+            inner.margins=c(.04,.03,.02,.01), earth.boundary = TRUE, 
+            space.color="grey90", legend.outside=T, legend.outside.position="right",
+            legend.frame=F, legend.outside.size=0.25, outer.margins=c(0.02,0.01,0.02,0.01)) +
+  tm_facets(ncol=5, nrow=3)
+
+Map.Prob <- tm_shape(carto_use) + 
+  tm_polygons(col=paste0("X",1:t,".1"),
+              palette=paleta2, title="",legend.show=T, legend.reverse=T,
+              style="fixed", breaks=values2, interval.closure="left") +
+  tm_layout(main.title=crime_names[2] , main.title.position="center",
+            legend.text.size=1, panel.show=T, panel.label.size=2,
+            panel.labels=as.character(round(seq(t.from,t.to,length.out=t))),
+            panel.label.bg.color="lightskyblue3", bg.color="aliceblue",
+            inner.margins=c(.04,.03,.02,.01), earth.boundary = TRUE, space.color="grey90",
+            legend.outside=T, legend.outside.position="right", legend.frame=F,
+            legend.outside.size=0.25, outer.margins=c(0.02,0.01,0.02,0.01)) +
+  tm_facets(ncol=5, nrow=3)
+
+
+pdf("./figures/figE4.pdf", height=10, width=7.5, onefile=TRUE)
+pushViewport(viewport(layout=grid.layout(2,1)))
+print(Map.Risks, vp=viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(Map.Prob,  vp=viewport(layout.pos.row = 2, layout.pos.col = 1))
+dev.off()
+
+rm(list = c("carto_use","Map.Risks","Map.Prob"))
+
+
+## Figure E5
+carto_use <- merge(carto, data.frame(ID_area=1:n, matrix(risks[(2*n*t)+1:(n*t)],nrow=n, ncol=t, byrow=F),
+                                     matrix(prp[(2*n*t)+1:(n*t)],nrow=n, ncol=t, byrow=F) ), by="ID_area")
+
+Map.Risks<- tm_shape(carto_use) + 
+  tm_polygons(col=paste0("X",1:t),
+              palette=paleta, title="", legend.show=T, legend.reverse=T, 
+              style="fixed", breaks=values, interval.closure="left") +
+  tm_layout(main.title=crime_names[3], main.title.position="center",
+            legend.text.size=1, panel.show=T, panel.label.size=2, 
+            panel.labels=as.character(round(seq(t.from,t.to,length.out=t))),
+            panel.label.bg.color="lightskyblue3", bg.color="aliceblue",
+            inner.margins=c(.04,.03,.02,.01), earth.boundary = TRUE, 
+            space.color="grey90", legend.outside=T, legend.outside.position="right",
+            legend.frame=F, legend.outside.size=0.25, outer.margins=c(0.02,0.01,0.02,0.01)) +
+  tm_facets(ncol=5, nrow=3)
+
+Map.Prob <- tm_shape(carto_use) + 
+  tm_polygons(col=paste0("X",1:t,".1"),
+              palette=paleta2, title="",legend.show=T, legend.reverse=T,
+              style="fixed", breaks=values2, interval.closure="left") +
+  tm_layout(main.title=crime_names[3] , main.title.position="center",
+            legend.text.size=1, panel.show=T, panel.label.size=2,
+            panel.labels=as.character(round(seq(t.from,t.to,length.out=t))),
+            panel.label.bg.color="lightskyblue3", bg.color="aliceblue",
+            inner.margins=c(.04,.03,.02,.01), earth.boundary = TRUE, space.color="grey90",
+            legend.outside=T, legend.outside.position="right", legend.frame=F,
+            legend.outside.size=0.25, outer.margins=c(0.02,0.01,0.02,0.01)) +
+  tm_facets(ncol=5, nrow=3)
+
+
+pdf("./figures/figE5.pdf", height=10, width=7.5, onefile=TRUE)
+pushViewport(viewport(layout=grid.layout(2,1)))
+print(Map.Risks, vp=viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(Map.Prob,  vp=viewport(layout.pos.row = 2, layout.pos.col = 1))
+dev.off()
+
+rm(list = c("carto_use","Map.Risks","Map.Prob"))
+
+
+## Figure E6
+carto_use <- merge(carto, data.frame(ID_area=1:n, matrix(risks[(3*n*t)+1:(n*t)],nrow=n, ncol=t, byrow=F),
+                                     matrix(prp[(3*n*t)+1:(n*t)],nrow=n, ncol=t, byrow=F) ), by="ID_area")
+
+Map.Risks<- tm_shape(carto_use) + 
+  tm_polygons(col=paste0("X",1:t),
+              palette=paleta, title="", legend.show=T, legend.reverse=T, 
+              style="fixed", breaks=values, interval.closure="left") +
+  tm_layout(main.title=crime_names[4], main.title.position="center",
+            legend.text.size=1, panel.show=T, panel.label.size=2, 
+            panel.labels=as.character(round(seq(t.from,t.to,length.out=t))),
+            panel.label.bg.color="lightskyblue3", bg.color="aliceblue",
+            inner.margins=c(.04,.03,.02,.01), earth.boundary = TRUE, 
+            space.color="grey90", legend.outside=T, legend.outside.position="right",
+            legend.frame=F, legend.outside.size=0.25, outer.margins=c(0.02,0.01,0.02,0.01)) +
+  tm_facets(ncol=5, nrow=3)
+
+Map.Prob <- tm_shape(carto_use) + 
+  tm_polygons(col=paste0("X",1:t,".1"),
+              palette=paleta2, title="",legend.show=T, legend.reverse=T,
+              style="fixed", breaks=values2, interval.closure="left") +
+  tm_layout(main.title=crime_names[4] , main.title.position="center",
+            legend.text.size=1, panel.show=T, panel.label.size=2,
+            panel.labels=as.character(round(seq(t.from,t.to,length.out=t))),
+            panel.label.bg.color="lightskyblue3", bg.color="aliceblue",
+            inner.margins=c(.04,.03,.02,.01), earth.boundary = TRUE, space.color="grey90",
+            legend.outside=T, legend.outside.position="right", legend.frame=F,
+            legend.outside.size=0.25, outer.margins=c(0.02,0.01,0.02,0.01)) +
+  tm_facets(ncol=5, nrow=3)
+
+
+pdf("./figures/figE6.pdf", height=10, width=7.5, onefile=TRUE)
+pushViewport(viewport(layout=grid.layout(2,1)))
+print(Map.Risks, vp=viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(Map.Prob,  vp=viewport(layout.pos.row = 2, layout.pos.col = 1))
+dev.off()
+
+## rm
+rm(list = c("carto_use","Map.Risks","Map.Prob"))
+rm(list = c("risks","paleta","inf","top","values","prp","paleta2","values2"))
+
+################################################################################
+################################################################################
