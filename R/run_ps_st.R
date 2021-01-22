@@ -44,32 +44,24 @@ source("./functions/ps_st.R")
 ##################################################
 
 RW1.RW1.T1 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                    crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=1,
-                    prior.temporal=1,
-                    prior.interaction=1)
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=1, prior.temporal=1, prior.interaction=1,
+                    strategy=strategy)
 
 RW1.RW2.T1 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                    crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=1,
-                    prior.temporal=2,
-                    prior.interaction=1)
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=1, prior.temporal=2, prior.interaction=1,
+                    strategy=strategy)
 
 RW2.RW1.T1 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                    crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=2,
-                    prior.temporal=1,
-                    prior.interaction=1)
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=2, prior.temporal=1, prior.interaction=1,
+                    strategy=strategy)
 
 RW2.RW2.T1 <- ps_st(carto=carto, data=data, ID.area="ID_area", ID.year="ID_year",
-                    crimes=crimes, Expcrimes=paste0("e_",crimes),
-                    centered=TRUE, strategy=strategy,
-                    prior.spatial=2,
-                    prior.temporal=2,
-                    prior.interaction=1)
+                    crimes=crimes, Expcrimes=paste0("e_",crimes), centered=TRUE,
+                    prior.spatial=2, prior.temporal=2, prior.interaction=1,
+                    strategy=strategy)
 
 ## save
 resulta.T1 <- list(RW1.RW1.T1=RW1.RW1.T1, RW1.RW2.T1=RW1.RW2.T1,
