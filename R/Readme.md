@@ -1,6 +1,6 @@
 # R code
 
-This folder contains the necessary R functions to fit the multivariate spatio-temporal areal models described in Vicente et al. (2021), and to reproduce the results.
+This folder contains the necessary ```R``` functions to fit the multivariate spatio-temporal areal models described in Vicente et al. (2021), and to reproduce the results.
 
 The ```data_Psplines.RData``` file contains the following R objects:
 
