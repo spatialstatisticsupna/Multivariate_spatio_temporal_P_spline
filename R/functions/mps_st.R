@@ -328,11 +328,11 @@ mps_st <- function(carto=NULL,
   Rho.t <- cor(matrix(sir.t$SIR, nrow=t, ncol=k, byrow = FALSE))
   
   if(!initial){
-    initial.values.s<- as.vector(c(rep(1,k), rep(1, k*(k-1)/2), rep(0.5,2)))
-    initial.values.t<- as.vector(c(rep(1,k), rep(1,k*(k-1)/2), rep(0.5,1)))
+    initial.values.s<- as.vector(c(rep(1,k), rep(1, k*(k-1)/2), rep(1,1)))
+    initial.values.t<- as.vector(c(rep(1,k), rep(1,k*(k-1)/2)))
   } else {
-    initial.values.s<- as.vector(c(sqrt(diag(Sigma.s)), Rho.s[upper.tri(Rho.s, diag = FALSE)], rep(0.5,2)))
-    initial.values.t<- as.vector(c(sqrt(diag(Sigma.t)), Rho.t[upper.tri(Rho.t, diag = FALSE)], rep(0.5,1)))
+    initial.values.s<- as.vector(c(sqrt(diag(Sigma.s)), Rho.s[upper.tri(Rho.s, diag = FALSE)], rep(1,1)))
+    initial.values.t<- as.vector(c(sqrt(diag(Sigma.t)), Rho.t[upper.tri(Rho.t, diag = FALSE)]))
   }
   
   ## Define appropriate hyperprior distributions (spatio-temporal)

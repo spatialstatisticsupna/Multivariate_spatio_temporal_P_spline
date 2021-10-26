@@ -30,7 +30,7 @@
       Covar <- Rho * sigma.mat
       Prec <- solve(Covar)
       
-      sigma.lambda <- sapply(theta[as.integer(k*(k+1)/2+1:2)], function(x) { exp(-0.5*x) })
+      sigma.lambda <- sapply(theta[as.integer(k*(k+1)/2+1)], function(x) { exp(-0.5*x) })
       
       return (list(sigma.j = sigma.j, corre.j=corre.j, Covar=Covar, Prec=Prec, sigma.lambda=sigma.lambda))
     }
@@ -45,7 +45,7 @@
     ###############################
     Q = function(){
       param <- interpret.theta()
-      P <- (param$sigma.lambda[1]^(-2))* M.W2 + (param$sigma.lambda[2]^(-2))* M.W1
+      P <- (param$sigma.lambda^(-2))* M.W2 + M.W1
       Q <- kronecker(param$Prec, P)
       Q <- inla.as.sparse(Q)
       return (Q)
@@ -84,9 +84,9 @@
       val = val + sum( log(2) + theta[as.integer( k+1:(k*(k-1)/2) )] - 
                          2*log(1 + exp(theta[as.integer( k+1:(k*(k-1)/2) )])) )
       ##############
-      ## sigma lambda ~ Unif(0,100) - smoothing parameter
+      ## sigma lambda ~ Unif(0,1000) - smoothing parameter
       ##############
-      val = val + sum(log(0.005)- (0.5)* theta[as.integer(k*(k+1)/2+1:2)])
+      val = val + sum(log(0.0005)- (0.5)* theta[as.integer(k*(k+1)/2+1)])
       return (val)
     }
     ###############################
@@ -139,9 +139,7 @@
       Covar <- Rho * sigma.mat
       Prec <- solve(Covar)
       
-      sigma.lambda <- sapply(theta[as.integer(k*(k+1)/2+1)], function(x) { exp(-0.5*x) })
-      
-      return (list(sigma.j = sigma.j, corre.j=corre.j, Covar=Covar, Prec=Prec, sigma.lambda=sigma.lambda))
+      return (list(sigma.j = sigma.j, corre.j=corre.j, Covar=Covar, Prec=Prec))
     }
     ###############################
     ## Graph of precision function; i.e., a 0/1 representation of precision matrix
@@ -154,8 +152,8 @@
     ###############################
     Q = function(){
       param <- interpret.theta()
-      P<- (param$sigma.lambda^(-2) ) * M.W
-      Q<- kronecker(param$Prec, P)
+      P <- M.W
+      Q <- kronecker(param$Prec, P)
       Q <- inla.as.sparse(Q)
       return (Q)
     }
@@ -192,10 +190,6 @@
       ##############
       val = val + sum( log(2) + theta[as.integer( k+1:(k*(k-1)/2) )] - 
                          2*log(1 + exp(theta[as.integer( k+1:(k*(k-1)/2) )])) )
-      ##############
-      ## sigma lambda ~ Unif(0,100) - smoothing parameter
-      ##############
-      val = val + log(0.005)- (0.5)* theta[as.integer(k*(k+1)/2+1)]
       return (val)
     }
     ###############################

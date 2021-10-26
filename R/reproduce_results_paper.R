@@ -267,6 +267,11 @@ for(i in id.area){
   rm(list=c("df","df.med"))
 }
 
+df.final$crime <- factor(df.final$crime)
+df.final$crime<- relevel(df.final$crime, "Rape")
+df.media$crime <- factor(df.media$crime)
+df.media$crime<- relevel(df.media$crime, "Rape")
+
 ## pdf
 p <- ggplot(data=df.final) +
   geom_polygon(data=df.final,
@@ -282,7 +287,7 @@ p <- ggplot(data=df.final) +
         legend.text = element_text(color = "black", size = 13),
         strip.text.x = element_text(size = 13)
         ) +
-  scale_fill_manual(values = c(selected_colors[2], selected_colors[3], selected_colors[4], selected_colors[1]) )
+  scale_fill_manual(values = selected_colors )
 
 ## pdf
 pdf("./figures/fig6.pdf", height=8, width=14, onefile=FALSE)
@@ -307,25 +312,57 @@ risk.array <- array(resulta.with$RW1.RW1.T2$summary.fitted.values$`0.5quant`[1:(
 inf <- min(risk.array)-0.01
 top <- round(max(risk.array)+0.51,2)
 
-## without arrows
+
+## with arrows
 pdf("./figures/fig7.pdf", height=8, width=10, onefile=FALSE)
 par(mfrow=c(2,2))
-for(i in 1:k){
-  risk.mat<- risk.array[,,i]
-  t.risk.mat<- as.data.frame(t(risk.mat))
-  fbplot(t.risk.mat,method='MBD',ylim=c(inf,top), fullout=T,
-         barcol="slateblue4", outliercol="red", xlab="",ylab="", yaxt="n",
-         col=rgb(255,48,48,alpha=200, maxColorValue=255))
-  axis(side=2, at=seq(0,4,1), labels = TRUE, lty = 0)
-  title(ylab=expression(R[ijt]), xlab="Year", cex.lab=1.3, line=2.0)
-  rect(par("usr")[1],top-0.5,par("usr")[2],par("usr")[4],
-       col=" gray83", border = "gray83")
-  legend(7,top-0.5, crime_names[i], box.col = "transparent",
-         bg = "transparent", adj = 0.2, xjust = 0.5, yjust = 0.1, cex = 1.2)
-  rm(list = c("risk.mat","t.risk.mat"))
-}
+fbplot(as.data.frame(t( risk.array[,,1])), method='MBD', ylim=c(inf,top), fullout=T, 
+       barcol="slateblue4", outliercol="red",xlab="",ylab="", yaxt="n", 
+       col=rgb(255,48,48,alpha=200, maxColorValue=255)) 
+axis(side=2, at=seq(0,4,1), labels = TRUE, lty = 0)
+title(ylab=expression(R[ijt]), xlab="Year", cex.lab=1.3, line=2.0)
+rect(par("usr")[1],top-0.5,par("usr")[2],par("usr")[4],
+     col = "gray83", border = "gray83")
+legend(7,top-0.5, crime_names[1], box.col = "transparent",
+       bg = "transparent", adj = 0.2, xjust = 0.5, yjust = 0.1, cex = 1.2)
+arrows(10,2.5, 10,1.9, length=0.2, col=1, angle = 30)
+text(10,2.7,ID$dist[32],col=1)
+
+fbplot(as.data.frame(t( risk.array[,,2])), method='MBD',ylim=c(inf,top), fullout=T, 
+       barcol="slateblue4", outliercol="red",xlab="",ylab="", yaxt="n",
+       col=rgb(255,48,48,alpha=200, maxColorValue=255))
+axis(side=2, at=seq(0,4,1), labels = TRUE, lty = 0)
+title(ylab=expression(R[ijt]), xlab="Year", cex.lab=1.3, line=2.0)
+rect(par("usr")[1],top-0.5,par("usr")[2],par("usr")[4],
+     col = "gray83", border = "gray83")
+legend(7,top-0.5, crime_names[2], box.col = "transparent",
+       bg = "transparent", adj = 0.2, xjust = 0.4, yjust = 0.1, cex = 1.2)
+arrows(8,3.1, 8,2.5, length=0.2, col=1, angle = 35)
+text(8,3.3,ID$dist[32],col=1)
+
+fbplot(as.data.frame(t( risk.array[,,3])), method='MBD',ylim=c(inf,top), fullout=T, 
+       barcol="slateblue4", outliercol="red",xlab="",ylab="", yaxt="n",
+       col=rgb(255,48,48,alpha=200, maxColorValue=255))
+axis(side=2, at=seq(0,4,1), labels = TRUE, lty = 0)
+title(ylab=expression(R[ijt]), xlab="Year", cex.lab=1.3, line=2.0)
+rect(par("usr")[1],top-0.5,par("usr")[2],par("usr")[4],
+     col = "gray83", border = "gray83")
+legend(7,top-0.5, crime_names[3], box.col = "transparent",
+       bg = "transparent", adj = 0.2, xjust = 0.38, yjust = 0.1, cex = 1.2)
+
+fbplot(as.data.frame(t( risk.array[,,4])), method='MBD',ylim=c(inf,top), fullout=T, 
+       barcol="slateblue4", outliercol="red", xlab="",ylab="", yaxt="n",
+       col=rgb(255,48,48,alpha=200, maxColorValue=255))
+axis(side=2, at=seq(0,4,1), labels = TRUE, lty = 0)
+title(ylab=expression(R[ijt]), xlab="Year", cex.lab=1.3, line=2.0)
+rect(par("usr")[1],top-0.5,par("usr")[2],par("usr")[4],
+     col = "gray83", border = "gray83")
+legend(7,top-0.5, crime_names[4], box.col = "transparent", 
+       bg = "transparent", adj = 0.2, xjust = 0.38, yjust = 0.1, cex = 1.2)
 dev.off()
-rm(list = c("risk.array","inf","top","i"))
+
+rm(list = c("risk.array","inf","top"))
+
 
 
 ################################################################################
@@ -431,6 +468,11 @@ for(i in id.area){
 }
 rm(list = c("i","j"))
 
+df.final$crime <- factor(df.final$crime)
+df.final$crime<- relevel(df.final$crime, "Rape")
+
+df.media$crime <- factor(df.media$crime)
+df.media$crime<- relevel(df.media$crime, "Rape")
 
 ## pdf
 p<- ggplot(data=df.final) +
@@ -450,7 +492,8 @@ p<- ggplot(data=df.final) +
         legend.text = element_text(color = "black", size = 12),
         strip.text.x = element_text(size = 13)
   ) +
-  scale_fill_manual(values = c(selected_colors[2], selected_colors[3], selected_colors[4], selected_colors[1]) )
+  scale_fill_manual(values = selected_colors )
+  # scale_fill_manual(values = c(selected_colors[2], selected_colors[3], selected_colors[4], selected_colors[1]) )
 
 ## pdf
 pdf("./figures/figE2.pdf", height=8, width=14, onefile=FALSE)
