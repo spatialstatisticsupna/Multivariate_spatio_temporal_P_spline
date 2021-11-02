@@ -16,6 +16,7 @@ R code to fit the multivariate spatio-temporal areal models described in the pap
 
 # Acknowledgements
 This work has been supported by Project MTM2017-82553-R (AEI/FEDER, UE) and Project PID2020-113125RB-I00/MCIN/AEI/10.13039/501100011033.
+[embed]http://micin-aei.pdf[/embed] 
 
 
 # References
