@@ -21,6 +21,9 @@ This work has been supported by Project MTM2017-82553-R (AEI/FEDER, UE) and Proj
 
 <embed src="https://github.com/spatialstatisticsupna/Multivariate_spatio_temporal_P_spline/blob/master/micin-aei.pdf" type="application/pdf" />
 
+[embed]https://github.com/spatialstatisticsupna/Multivariate_spatio_temporal_P_spline/blob/master/micin-aei.pdf [/embed]
+
+
 # References
 Vicente, G., Goicoa, T., and Ugarte, M.D. (2021). Multivariate Bayesian spatio-temporal P-spline models to analyse crimes against women. _Biostatistics_, in press.
   
