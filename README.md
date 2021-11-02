@@ -17,11 +17,11 @@ R code to fit the multivariate spatio-temporal areal models described in the pap
 # Acknowledgements
 This work has been supported by Project MTM2017-82553-R (AEI/FEDER, UE) and Project PID2020-113125RB-I00/MCIN/AEI/10.13039/501100011033.
 
-<embed src="https://github.com/spatialstatisticsupna/Multivariate_spatio_temporal_P_spline/blob/master/micin-aei.pdf" type="application/pdf" />
 
-<embed src="https://github.com/spatialstatisticsupna/Multivariate_spatio_temporal_P_spline/blob/master/micin-aei.pdf" type="application/pdf" />
+<iframe src="https://github.com/spatialstatisticsupna/Multivariate_spatio_temporal_P_spline/blob/master/micin-aei.pdf" style="width:600px; height:500px;" frameborder="0"></iframe>
 
-https://github.com/spatialstatisticsupna/Multivariate_spatio_temporal_P_spline/blob/master/micin-aei.pdf
+
+
 
 
 # References
