@@ -6,16 +6,16 @@ The ```data_Psplines.RData``` file contains the following R objects:
 
 - ```data```: contains the data set used. It is a dataframe with the following variables,
 	- **dist**: Districts
-	- **state**: State (Maharashtra)
-	- **year**: Year (2001:2013)
-	- **rape**: Observed number of Rape
-	- **assault**: Observed number of Assault or criminal force to woman with intent to outrage her modesty
-	- **cruelty**: Observed number of Cruelty by husband or relatives of husband
-	- **kidnapping**: Observed number of Kidnapping and abduction of women
-	- **e_rape**: Expected number of Rape
-	- **e_assault**: Expected number of Assault or criminal force to woman with intent to outrage her modesty
-	- **e_cruelty**: Expected number of Cruelty by husband or relatives of husband
-	- **e_kidnapping**: Expected number of Kidnapping and abduction of women
+	- **state**: States (Maharashtra)
+	- **year**: Years (2001:2013)
+	- **rape**: Observed number of Rapes
+	- **assault**: Observed number of Assaults or criminal force to woman with intent to outrage her modesty
+	- **cruelty**: Observed number of cases of the crime "Cruelty by husband or relatives of husband"
+	- **kidnapping**: Observed number of cases of the crime "Kidnapping and abduction of women"
+	- **e_rape**: Expected number of Rapes
+	- **e_assault**: Expected number of Assaults or criminal force to woman with intent to outrage her modesty
+	- **e_cruelty**: Expected number of of cases of the crime "Cruelty by husband or relatives of husband"
+	- **e_kidnapping**: Expected number of of cases of the crime "Kidnapping and abduction of women"
 	- **ID_area**: Area Identifiers (Districts)
 	- **ID_year**: Time Identifiers (Year)
 
