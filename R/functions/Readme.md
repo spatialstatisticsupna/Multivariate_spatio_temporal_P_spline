@@ -98,5 +98,5 @@ generic_mps_temp(cmd = c("graph", "Q", "mu", "initial", "log.norm.const", "log.p
 
 | Argument | Description |
 |:---	| :--- |
-| cmd	| Internall functions used by the ```rgeneric``` model to define the latent effect. | 
+| cmd	| Internal functions used by the ```rgeneric``` model to define the latent effect. | 
 | theta	| Vector of hyperparameters. |
