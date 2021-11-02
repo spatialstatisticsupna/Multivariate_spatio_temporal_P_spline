@@ -10,7 +10,7 @@ This [generic_mps.R](https://github.com/spatialstatisticsupna/Multivariate_spati
 # Function ```mps_st```
 
 ## Description
-Fit a multivariate Bayesian spatio-temporal P-spline models.
+Fit multivariate Bayesian spatio-temporal P-spline models.
 
 ## Usage
 ```
@@ -48,7 +48,7 @@ mps_st(carto=NULL, data=NULL, ID.area=NULL, ID.year=NULL, crimes=NULL, Expcrimes
 # Function ```ps_st```
 
 ## Description
-Fit a univariate Bayesian spatio-temporal P-spline models.
+Fit univariate Bayesian spatio-temporal P-spline models.
 
 ## Usage
 ```
