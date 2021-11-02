@@ -20,6 +20,8 @@ This work has been supported by Project MTM2017-82553-R (AEI/FEDER, UE) and Proj
 
 <object>data="https://github.com/spatialstatisticsupna/Multivariate_spatio_temporal_P_spline/blob/master/micin-aei.pdf" type="application/pdf" width="100%"</object> 
  
+<object data="https://github.com/spatialstatisticsupna/Multivariate_spatio_temporal_P_spline/blob/master/micin-aei.pdf" type="application/pdf" width="100%"/>
+
 
 
 
