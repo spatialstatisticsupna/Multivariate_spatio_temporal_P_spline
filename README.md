@@ -1,4 +1,4 @@
-# Multivariate Bayesian spatio-temporal P-spline models to analyse crimes against women 
+# Multivariate Bayesian spatio-temporal P-spline models to analyze crimes against women 
 This repository contains the R code to fit the models described in the paper entitled _"Multivariate Bayesian spatio-temporal P-spline models to analyse crimes against women"_ (Vicente et al., 2021).
 
 
