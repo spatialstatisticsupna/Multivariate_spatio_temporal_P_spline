@@ -9,12 +9,12 @@ The ```data_Psplines.RData``` file contains the following R objects:
 	- **dist**: Districts
 	- **state**: States (Maharashtra)
 	- **year**: Years (2001:2013)
-	- **rape**: Observed number of Rapes
-	- **assault**: Observed number of Assaults or criminal force to woman with intent to outrage her modesty
+	- **rape**: Observed number of rapes
+	- **assault**: Observed number of assaults or criminal force to woman with intent to outrage her modesty
 	- **cruelty**: Observed number of cases of the crime "Cruelty by husband or relatives of husband"
 	- **kidnapping**: Observed number of cases of the crime "Kidnapping and abduction of women"
-	- **e_rape**: Expected number of Rapes
-	- **e_assault**: Expected number of Assaults or criminal force to woman with intent to outrage her modesty
+	- **e_rape**: Expected number of rapes
+	- **e_assault**: Expected number of assaults or criminal force to woman with intent to outrage her modesty
 	- **e_cruelty**: Expected number of of cases of the crime "Cruelty by husband or relatives of husband"
 	- **e_kidnapping**: Expected number of of cases of the crime "Kidnapping and abduction of women"
 	- **ID_area**: Area Identifiers (Districts)
